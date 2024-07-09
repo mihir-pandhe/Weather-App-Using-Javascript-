@@ -14,23 +14,20 @@ weatherForm.addEventListener('submit', function (event) {
     }
 });
 
-function getWeather(city) {
+async function getWeather(city) {
     const apiKey = 'f47667a6aac6467596b214543240907';
     const apiUrl = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=no`;
 
-    fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('City not found');
-            }
-            return response.json();
-        })
-        .then(weather => {
-            displayWeather(weather);
-        })
-        .catch(error => {
-            showError(error.message);
-        });
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+            throw new Error('City not found');
+        }
+        const weather = await response.json();
+        displayWeather(weather);
+    } catch (error) {
+        showError(error.message);
+    }
 }
 
 function displayWeather(weather) {
@@ -38,6 +35,7 @@ function displayWeather(weather) {
 
     const weatherHTML = `
     <h2>${location.name}, ${location.country}</h2>
+    <p>Local Time: ${location.localtime}</p>
     <p>Temperature: ${current.temp_c}°C</p>
     <p>Weather: ${current.condition.text}</p>
   `;
